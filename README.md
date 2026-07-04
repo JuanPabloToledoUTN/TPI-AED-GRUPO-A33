@@ -109,7 +109,7 @@ El sistema detecta errores como:
 - Toledo, Juan Pablo
 - Alfonso Abatte, Valentina Milagros
 - Delbon, Valentina
-- Martin, Juli
+- Martin, Julieta
 
 ---
 
