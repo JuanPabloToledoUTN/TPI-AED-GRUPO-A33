@@ -1,0 +1,198 @@
+UNIVERSIDAD TECNOLÓGICA NACIONAL 
+FACULTAD REGIONAL RESISTENCIA (FRRE)  
+Sistema de Gestión de Estacionamiento
+Grupo A33–Escenario 6
+Carrera: ISI 
+Comisión: K1.1
+Asignatura: Algoritmos y Estructuras de Datos
+
+ 1.  ANÁLISIS DEL PROBLEMA
+se requiere desarrollar un sistema para administrar un estacionamiento. El sistema registrara los ingresos y egresos de vehiculos, controlara los espacios disponibles calculara tiempos de permanencia e importes a pagar y generara estadisticas de uso del servicio
+1.1  Entradas
+Patente del vehículo
+Hora de ingreso (entero en rango 0–23)
+Hora de salida (entero en rango 0–23)
+Opción seleccionada en el menú principal
+1.2  Procesos
+Registrar el ingreso de un vehículo, controlando la disponibilidad
+Registrar el egreso y calcular el tiempo de estadía
+Calcular el importe a pagar en función de la tarifa horaria
+Mostrar estadísticas del sistema
+Validar todos los datos ingresados por el usuario
+1.3  Salidas
+Confirmación de ingreso registrado y espacios disponibles actualizados
+Tiempo de estadía e importe al procesar el egreso
+Estadísticas: espacios libres, vehículos atendidos y tiempo promedio de estadía
+ 
+2.  VARIABLES Y CONSTANTES
+2.1  Constantes del sistema
+Constante
+Valor
+Descripción
+CAPACIDAD_MAXIMA
+50
+Capacidad total de espacios del estacionamiento
+TARIFA_POR_HORA
+$1.000
+Costo por hora de estadía (en pesos)
+
+ 
+2.2  Variables globales
+Variable
+Tipo
+Descripción
+espaciosOcupados
+Entero
+Cantidad de espacios actualmente ocupados
+vehiculosAtendidos
+Entero
+Contador de vehículos que ya egresaron
+acumuladorTiempo
+Entero
+Suma total de horas de estadía (para calcular promedio)
+opcion
+Entero
+Opción ingresada por el usuario en el menú
+
+ 
+3.  PSEUDOCÓDIGO
+3.1  Proceso principal
+PROCESO GestionEstacionamiento
+   // -- Constantes --
+   CAPACIDAD_MAXIMA <- 50
+   TARIFA_POR_HORA  <- 1000
+ 
+   // -- Variables --
+   espaciosOcupados   <- 0
+   vehiculosAtendidos <- 0
+   acumuladorTiempo   <- 0
+   opcion             <- 0
+ 
+   REPETIR
+      fn_mostrarMenu()
+      LEER opcion
+ 
+      SI opcion == 1 ENTONCES  fn_registrarIngreso()    FINSI
+      SI opcion == 2 ENTONCES  fn_registrarEgreso()     FINSI
+      SI opcion == 3 ENTONCES  fn_mostrarEstadisticas() FINSI
+      SI opcion == 4 ENTONCES  ESCRIBIR "Fin del sistema." FINSI
+ 
+   HASTA QUE opcion == 4
+FINPROCESO
+ 
+3.2  Subproceso fn_mostrarMenu()
+SUBPROCESO fn_mostrarMenu()
+   ESCRIBIR "======================================="
+   ESCRIBIR "     SISTEMA DE ESTACIONAMIENTO        "
+   ESCRIBIR "======================================="
+   ESCRIBIR "  1 - Registrar ingreso de vehiculo    "
+   ESCRIBIR "  2 - Registrar egreso de vehiculo     "
+   ESCRIBIR "  3 - Ver estadisticas del sistema     "
+   ESCRIBIR "  4 - Salir del programa               "
+   ESCRIBIR "======================================="
+   ESCRIBIR "Seleccione una opcion:"
+FINSUBPROCESO
+ 
+3.3  Subproceso fn_registrarIngreso()
+SUBPROCESO fn_registrarIngreso()
+   SI espaciosOcupados < CAPACIDAD_MAXIMA ENTONCES
+      ESCRIBIR "Ingrese la patente del vehiculo:"
+      LEER patente
+ 
+      ESCRIBIR "Ingrese hora de ingreso (0-23):"
+      LEER horaIngreso
+ 
+      MIENTRAS horaIngreso < 0 O horaIngreso > 23 HACER
+         ESCRIBIR "Hora invalida. Ingrese nuevamente (0-23):"
+         LEER horaIngreso
+      FINMIENTRAS
+ 
+      // Guardar patente y horaIngreso en la estructura
+      espaciosOcupados <- espaciosOcupados + 1
+      ESCRIBIR "Ingreso registrado correctamente."
+      ESCRIBIR "Espacios disponibles: ", CAPACIDAD_MAXIMA - espaciosOcupados
+   SINO
+      ESCRIBIR "Sin lugares disponibles. Intente mas tarde."
+   FINSI
+FINSUBPROCESO
+ 
+3.4  Subproceso fn_registrarEgreso()
+SUBPROCESO fn_registrarEgreso()
+   ESCRIBIR "Ingrese la patente del vehiculo:"
+   LEER patente
+ 
+   SI fn_vehiculoExiste(patente) ENTONCES
+      ESCRIBIR "Ingrese hora de salida (0-23):"
+      LEER horaSalida
+ 
+      MIENTRAS horaSalida < 0 O horaSalida > 23 HACER
+         ESCRIBIR "Hora invalida. Ingrese nuevamente (0-23):"
+         LEER horaSalida
+      FINMIENTRAS
+ 
+      tiempoEstadia <- horaSalida - horaIngreso
+      importe       <- fn_calcularImporte(tiempoEstadia)
+ 
+      espaciosOcupados   <- espaciosOcupados - 1
+      vehiculosAtendidos <- vehiculosAtendidos + 1
+      acumuladorTiempo   <- acumuladorTiempo + tiempoEstadia
+ 
+      ESCRIBIR "Tiempo de estadia: ", tiempoEstadia, " horas"
+      ESCRIBIR "Importe a pagar:   $", importe
+   SINO
+      ESCRIBIR "Patente no registrada en el sistema."
+   FINSI
+FINSUBPROCESO
+ 
+3.5  Función fn_calcularImporte()
+FUNCION importe <- fn_calcularImporte(tiempoEstadia)
+   importe <- tiempoEstadia * TARIFA_POR_HORA
+FINFUNCION
+ 
+3.6  Subproceso fn_mostrarEstadisticas()
+SUBPROCESO fn_mostrarEstadisticas()
+   espaciosDisponibles <- CAPACIDAD_MAXIMA - espaciosOcupados
+ 
+   ESCRIBIR "======================================"
+   ESCRIBIR "      ESTADISTICAS DEL SISTEMA        "
+   ESCRIBIR "======================================"
+   ESCRIBIR "Espacios disponibles:  ", espaciosDisponibles
+   ESCRIBIR "Espacios ocupados:     ", espaciosOcupados
+   ESCRIBIR "Vehiculos atendidos:   ", vehiculosAtendidos
+ 
+   SI vehiculosAtendidos > 0 ENTONCES
+      tiempoPromedio <- acumuladorTiempo / vehiculosAtendidos
+      ESCRIBIR "Tiempo promedio estadía: ", tiempoPromedio, " horas"
+   SINO
+      ESCRIBIR "Sin egresos registrados aun."
+   FINSI
+FINSUBPROCESO
+ 
+4.  VALIDACIONES
+El sistema implementa las siguientes validaciones para garantizar la integridad de los datos ingresados por el usuario:
+ 
+
+Dato a validar
+Condición / Acción correctiva
+Opción del menú principal
+Debe estar entre 1 y 4. El ciclo REPETIR-HASTA QUE asegura que solo se ejecuta una opción válida.
+Hora de ingreso
+Debe estar entre 0 y 23. Se repite la lectura con MIENTRAS-FINMIENTRAS hasta obtener un valor correcto.
+Hora de salida
+Idem hora de ingreso. Se aplica la misma validación con MIENTRAS-FINMIENTRAS.
+Capacidad del estacionamiento
+Antes de registrar un ingreso se verifica que espaciosOcupados < CAPACIDAD_MAXIMA.
+Existencia del vehículo
+Al procesar un egreso se verifica que la patente esté registrada en el sistema.
+
+ 
+5.  CONCLUSIÓN
+La solución diseñada cumple en su totalidad con los requisitos planteados en el Escenario 6 de Gestión de Estacionamiento. A lo largo del desarrollo se aplicaron los siguientes conceptos fundamentales de la asignatura:
+ 
+Estructuras condicionales (SI / SINO / FINSI) para controlar el flujo de ejecución según la opción elegida y la validez de los datos.
+Estructuras repetitivas: REPETIR-HASTA QUE para el ciclo del menú principal y MIENTRAS-FINMIENTRAS para las validaciones de entrada.
+Modularización mediante SUBPROCESO y FUNCION, con el prefijo fn_ establecido por la cátedra, aplicando el principio de responsabilidad única.
+Acumuladores (acumuladorTiempo) y contadores (vehiculosAtendidos) para el seguimiento estadístico del sistema.
+Validaciones completas de entrada que garantizan la integridad y consistencia de los datos procesados.
+ 
+La organización en módulos independientes (menú, ingreso, egreso, cálculo e estadísticas) mejora notablemente la legibilidad del algoritmo, facilita su mantenimiento y permite extender el sistema en el futuro con mínimo impacto en los módulos existentes.
